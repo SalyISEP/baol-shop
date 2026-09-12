@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}
+Boutique — Baol Shop
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.shop {
+    max-width: 1250px;
+    margin: auto;
+    padding: 60px 25px;
+}
+
+.shop-header {
+    margin-bottom: 35px;
+}
+
+.shop-header h1 {
+    font-size: 44px;
+    margin: 10px 0;
+}
+
+.shop-header p {
+    color: #777;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 1fr 260px auto auto;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.filters input,
+.filters select,
+.filters button,
+.filters a {
+    padding: 13px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.filters input {
+    width: 100%;
+}
+
+.filters button {
+    background: #111;
+    color: white;
+    cursor: pointer;
+}
+
+.filters a {
+    text-decoration: none;
+    text-align: center;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    transition: .25s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.image-container {
+    height: 300px;
+    background: #f3f3f3;
+    position: relative;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.no-image {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 7px 11px;
+    border-radius: 20px;
+    background: #111;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.badge.out {
+    background: #c62828;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.product-description {
+    color: #777;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 8px;
+    min-height: 42px;
+}
+
+.price {
+    margin: 18px 0;
+    font-weight: bold;
+}
+
+.old-price {
+    color: #999;
+    text-decoration: line-through;
+    margin-right: 7px;
+    font-size: 13px;
+}
+
+.buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.button {
+    flex: 1;
+    padding: 11px;
+    border-radius: 7px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.view-button {
+    border: 1px solid #111;
+}
+
+.buy-button {
+    background: #111;
+    color: white;
+}
+
+.disabled {
+    background: #ddd;
+    color: #777;
+}
+
+@media (max-width: 1000px) {
+
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .filters {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters {
+        grid-template-columns: 1fr;
+    }
+
+    .shop-header h1 {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+
+<div class="shop">
+
+    <div class="shop-header">
+
+        <p class="small-title">
+            BAOL SHOP
+        </p>
+
+        <h1>
+            Notre boutique
+        </h1>
+
+        <p>
+            Découvrez tous nos produits disponibles.
+        </p>
+
+    </div>
+
+
+    <form
+        method="get"
+        class="filters"
+    >
+
+        <input
+            type="text"
+            name="q"
+            value="{{ search }}"
+            placeholder="🔎 Rechercher un produit..."
+        >
+
+
+        <select name="category">
+
+            <option value="">
+                Toutes les catégories
+            </option>
+
+            {% for category in categories %}
+
+                <option
+                    value="{{ category.id }}"
+                    {% if selected_category == category.id|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ category.name }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <button type="submit">
+            Rechercher
+        </button>
+
+
+        <a href="{% url 'boutique' %}">
+            Réinitialiser
+        </a>
+
+    </form>
+
+
+    <div class="products-grid">
+
+        {% for product in products %}
+
+            <article class="product-card">
+
+                <div class="image-container">
+
+                    {% if product.image %}
+
+                        <img
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                            class="product-image"
+                        >
+
+                    {% else %}
+
+                        <div class="no-image">
+                            BAOL SHOP
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if product.promo_price %}
+
+                        <span class="badge">
+                            PROMO
+                        </span>
+
+                    {% elif not product.is_available %}
+
+                        <span class="badge out">
+                            ÉPUISÉ
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="product-info">
+
+                    <div class="product-name">
+                        {{ product.name }}
+                    </div>
+
+
+                    {% if product.description %}
+
+                        <div class="product-description">
+                            {{ product.description }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="price">
+
+                        {% if product.promo_price %}
+
+                            <span class="old-price">
+                                {{ product.price|floatformat:0 }} FCFA
+                            </span>
+
+                            {{ product.promo_price|floatformat:0 }} FCFA
+
+                        {% else %}
+
+                            {{ product.price|floatformat:0 }} FCFA
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="buttons">
+
+                        <a
+                            href="{% url 'product_detail' product.id %}"
+                            class="button view-button"
+                        >
+                            Voir
+                        </a>
+
+
+                        {% if product.is_available %}
+
+                            <a
+                                href="{% url 'product_detail' product.id %}"
+                                class="button buy-button"
+                            >
+                                Acheter
+                            </a>
+
+                        {% else %}
+
+                            <span class="button disabled">
+                                Épuisé
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <p>
+                Aucun produit ne correspond à votre recherche.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

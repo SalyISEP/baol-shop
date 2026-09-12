@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+
+{% block title %}
+Baol Shop — Votre boutique en ligne
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.hero {
+    min-height: 580px;
+    padding: 80px 7%;
+    display: flex;
+    align-items: center;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.78),
+            rgba(0,0,0,.25)
+        ),
+        #222;
+    color: white;
+}
+
+.hero-content {
+    max-width: 650px;
+}
+
+.small-title {
+    font-size: 12px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    opacity: .8;
+}
+
+.hero h1 {
+    font-size: 64px;
+    line-height: 1.05;
+    margin: 20px 0;
+}
+
+.hero h1 span {
+    display: block;
+    font-style: italic;
+}
+
+.hero p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #ddd;
+}
+
+.hero-button {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 15px 24px;
+    background: white;
+    color: #111;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+.products-section {
+    max-width: 1250px;
+    margin: auto;
+    padding: 75px 25px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 35px;
+    gap: 20px;
+}
+
+.section-heading h2 {
+    font-size: 38px;
+    margin: 8px 0 0;
+}
+
+.section-link {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.category-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.category-card {
+    min-height: 130px;
+    padding: 25px;
+    background: #f0eee9;
+    display: flex;
+    align-items: end;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 12px;
+    transition: .25s;
+}
+
+.category-card:hover {
+    background: #111;
+    color: white;
+    transform: translateY(-4px);
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    transition: .25s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-image {
+    height: 310px;
+    background: #f3f3f3;
+    position: relative;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.no-image {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.promo {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #111;
+    color: white;
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.category {
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.product-info h3 {
+    margin: 8px 0;
+}
+
+.price {
+    margin: 15px 0;
+}
+
+.old-price {
+    color: #999;
+    text-decoration: line-through;
+    margin-right: 8px;
+}
+
+.product-button {
+    display: block;
+    padding: 12px;
+    border: 1px solid #111;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 7px;
+}
+
+.services {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    padding: 70px 7%;
+    background: #f1eee9;
+}
+
+.service {
+    text-align: center;
+    padding: 20px;
+}
+
+.service-icon {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+.service p {
+    color: #666;
+    line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+
+    .category-list,
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .services {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 550px) {
+
+    .category-list,
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        min-height: 500px;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+    }
+
+    .section-heading {
+        display: block;
+    }
+}
+
+</style>
+
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <p class="small-title">
+            BIENVENUE CHEZ BAOL SHOP
+        </p>
+
+        <h1>
+            Le style que vous
+            <span>méritez.</span>
+        </h1>
+
+        <p>
+            Découvrez une sélection de sacs, chaussures,
+            vêtements et accessoires choisis avec soin.
+        </p>
+
+        <a
+            href="{% url 'boutique' %}"
+            class="hero-button"
+        >
+            Découvrir la boutique →
+        </a>
+
+    </div>
+
+</section>
+
+
+<section
+    class="products-section"
+    id="categories"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <p class="small-title">
+                DÉCOUVREZ
+            </p>
+
+            <h2>
+                Nos catégories
+            </h2>
+
+        </div>
+
+        <a
+            href="{% url 'boutique' %}"
+            class="section-link"
+        >
+            Voir la boutique →
+        </a>
+
+    </div>
+
+
+    <div class="category-list">
+
+        {% for category in categories %}
+
+            <a
+                href="{% url 'categorie' category.id %}"
+                class="category-card"
+            >
+                {{ category.name }}
+            </a>
+
+        {% empty %}
+
+            <p>
+                Aucune catégorie disponible.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section class="products-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <p class="small-title">
+                NOTRE SÉLECTION
+            </p>
+
+            <h2>
+                Nos produits
+            </h2>
+
+        </div>
+
+        <a
+            href="{% url 'boutique' %}"
+            class="section-link"
+        >
+            Toute la boutique →
+        </a>
+
+    </div>
+
+
+    <div class="product-grid">
+
+        {% for product in products %}
+
+            <article class="product-card">
+
+                <a href="{% url 'product_detail' product.id %}">
+
+                    <div class="product-image">
+
+                        {% if product.image %}
+
+                            <img
+                                src="{{ product.image.url }}"
+                                alt="{{ product.name }}"
+                            >
+
+                        {% else %}
+
+                            <div class="no-image">
+                                BAOL SHOP
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if product.promo_price %}
+
+                            <span class="promo">
+                                PROMO
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </a>
+
+
+                <div class="product-info">
+
+                    {% if product.category %}
+
+                        <p class="category">
+                            {{ product.category.name }}
+                        </p>
+
+                    {% endif %}
+
+                    <h3>
+                        {{ product.name }}
+                    </h3>
+
+                    <div class="price">
+
+                        {% if product.promo_price %}
+
+                            <span class="old-price">
+                                {{ product.price|floatformat:0 }} FCFA
+                            </span>
+
+                            <strong>
+                                {{ product.promo_price|floatformat:0 }} FCFA
+                            </strong>
+
+                        {% else %}
+
+                            <strong>
+                                {{ product.price|floatformat:0 }} FCFA
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                    <a
+                        href="{% url 'product_detail' product.id %}"
+                        class="product-button"
+                    >
+                        Voir le produit →
+                    </a>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <p>
+                Aucun produit disponible pour le moment.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section class="services">
+
+    <div class="service">
+
+        <div class="service-icon">
+            🚚
+        </div>
+
+        <h3>
+            Livraison à domicile
+        </h3>
+
+        <p>
+            Livraison selon votre zone avec délai estimé.
+        </p>
+
+    </div>
+
+
+    <div class="service">
+
+        <div class="service-icon">
+            💳
+        </div>
+
+        <h3>
+            Paiement flexible
+        </h3>
+
+        <p>
+            Paiement à la livraison, Wave, Orange Money
+            ou virement.
+        </p>
+
+    </div>
+
+
+    <div class="service">
+
+        <div class="service-icon">
+            ♡
+        </div>
+
+        <h3>
+            Sélection soignée
+        </h3>
+
+        <p>
+            Des produits sélectionnés avec attention
+            pour votre quotidien.
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}

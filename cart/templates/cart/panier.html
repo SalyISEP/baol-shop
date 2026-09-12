@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}
+Mon panier — Baol Shop
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.cart {
+    max-width: 1100px;
+    margin: 55px auto;
+    padding: 0 20px;
+}
+
+.cart h1 {
+    font-size: 40px;
+    margin-bottom: 35px;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 25px;
+    align-items: center;
+    padding: 22px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-image {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    background: #f4f4f4;
+    border-radius: 10px;
+}
+
+.cart-name {
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.variant {
+    margin-top: 8px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.cart-price {
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.quantity a {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.delete {
+    display: inline-block;
+    margin-top: 10px;
+    color: #c62828;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.item-subtotal {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.cart-summary {
+    max-width: 420px;
+    margin: 35px 0 0 auto;
+    padding: 25px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.checkout {
+    display: block;
+    padding: 15px;
+    background: #111;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.continue {
+    display: inline-block;
+    margin-top: 25px;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+@media (max-width: 700px) {
+
+    .cart-item {
+        grid-template-columns: 80px 1fr;
+    }
+
+    .cart-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .item-subtotal {
+        grid-column: 2;
+    }
+}
+
+</style>
+
+
+<div class="cart">
+
+    <h1>
+        Mon panier 🛒
+    </h1>
+
+
+    {% if items %}
+
+        {% for item in items %}
+
+            <div class="cart-item">
+
+                <div>
+
+                    {% if item.product.image %}
+
+                        <img
+                            src="{{ item.product.image.url }}"
+                            alt="{{ item.product.name }}"
+                            class="cart-image"
+                        >
+
+                    {% else %}
+
+                        <div class="cart-image"></div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div>
+
+                    <div class="cart-name">
+                        {{ item.product.name }}
+                    </div>
+
+
+                    {% if item.variant %}
+
+                        <div class="variant">
+
+                            {% if item.variant.color %}
+                                Couleur : {{ item.variant.color }}<br>
+                            {% endif %}
+
+                            {% if item.variant.size %}
+                                Taille : {{ item.variant.size }}<br>
+                            {% endif %}
+
+                            {% if item.variant.pointure %}
+                                Pointure : {{ item.variant.pointure }}
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="cart-price">
+                        {{ item.price|floatformat:0 }} FCFA
+                    </div>
+
+
+                    <div class="quantity">
+
+                        <a
+                            href="{% url 'diminuer_panier' item.key %}"
+                        >
+                            −
+                        </a>
+
+                        <strong>
+                            {{ item.quantity }}
+                        </strong>
+
+                        <a
+                            href="{% url 'augmenter_panier' item.key %}"
+                        >
+                            +
+                        </a>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'supprimer_panier' item.key %}"
+                        class="delete"
+                    >
+                        Supprimer
+                    </a>
+
+                </div>
+
+
+                <div class="item-subtotal">
+
+                    {{ item.subtotal|floatformat:0 }} FCFA
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+
+        <div class="cart-summary">
+
+            <div class="total">
+
+                <span>
+                    Total
+                </span>
+
+                <span>
+                    {{ total|floatformat:0 }} FCFA
+                </span>
+
+            </div>
+
+
+            <a
+                href="{% url 'checkout' %}"
+                class="checkout"
+            >
+                Passer la commande
+            </a>
+
+        </div>
+
+
+        <a
+            href="{% url 'boutique' %}"
+            class="continue"
+        >
+            ← Continuer mes achats
+        </a>
+
+    {% else %}
+
+        <div class="empty-cart">
+
+            <h2>
+                Votre panier est vide
+            </h2>
+
+            <p>
+                Découvrez nos produits et ajoutez vos articles au panier.
+            </p>
+
+            <br>
+
+            <a
+                href="{% url 'boutique' %}"
+                class="checkout"
+            >
+                Découvrir la boutique
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

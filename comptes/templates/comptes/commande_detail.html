@@ -1,0 +1,743 @@
+cat > comptes/templates/comptes/commande_detail.html <<'EOF'
+{% extends "base.html" %}
+
+{% block title %}
+Commande #{{ order.id }} — Baol Shop
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.order-page {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+/* =========================
+   EN-TÊTE
+========================= */
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    color: #888;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.order-header h1 {
+    margin: 0 0 8px;
+    font-size: 34px;
+}
+
+.date {
+    color: #777;
+    margin: 0;
+}
+
+.status-badge {
+    padding: 11px 20px;
+    border-radius: 30px;
+    background: #f0f0f0;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================
+   CARTES
+========================= */
+
+.card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 18px;
+    padding: 26px;
+    margin-bottom: 22px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.04);
+}
+
+.card h2 {
+    margin: 0 0 22px;
+    font-size: 21px;
+}
+
+/* =========================
+   SUIVI COMMANDE
+========================= */
+
+.order-tracking {
+    position: relative;
+    margin-top: 10px;
+}
+
+.tracking-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    background: #f5f5f5;
+    opacity: .45;
+    transition: .25s ease;
+}
+
+.tracking-step.active {
+    opacity: 1;
+    background: #eaf8ef;
+}
+
+.tracking-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+}
+
+.tracking-step.active .tracking-icon {
+    background: #198754;
+    color: white;
+}
+
+.tracking-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tracking-content strong {
+    font-size: 16px;
+}
+
+.tracking-content span {
+    color: #777;
+    font-size: 14px;
+}
+
+/* =========================
+   INFORMATIONS
+========================= */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+.info-card p {
+    color: #555;
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.info-card strong {
+    color: #222;
+}
+
+/* =========================
+   PRODUITS
+========================= */
+
+.product-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.product-row:last-child {
+    border-bottom: none;
+}
+
+.product-info strong,
+.product-info span,
+.product-info small {
+    display: block;
+}
+
+.product-info strong {
+    font-size: 16px;
+}
+
+.product-info span {
+    color: #777;
+    margin-top: 6px;
+}
+
+.product-info small {
+    color: #999;
+    margin-top: 6px;
+}
+
+.product-price {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================
+   TOTAL
+========================= */
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.grand-total {
+    margin-top: 12px;
+    padding-top: 18px;
+    border-top: 2px solid #111;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* =========================
+   PAIEMENT
+========================= */
+
+.payment-info p {
+    color: #555;
+    margin: 12px 0;
+}
+
+.payment-info strong {
+    color: #222;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.order-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.order-btn {
+    display: inline-block;
+    padding: 13px 20px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.order-btn.primary {
+    background: #111;
+    color: white;
+}
+
+.order-btn.secondary {
+    background: #f1f1f1;
+    color: #222;
+}
+
+.order-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .order-page {
+        margin: 30px auto;
+    }
+
+    .order-header {
+        display: block;
+    }
+
+    .order-header h1 {
+        font-size: 28px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        margin-top: 15px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .product-row {
+        align-items: flex-start;
+    }
+
+    .product-price {
+        font-size: 14px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+}
+
+</style>
+
+
+<div class="order-page">
+
+
+    <!-- =========================
+         EN-TÊTE
+    ========================== -->
+
+    <div class="order-header">
+
+        <div>
+
+            <div class="eyebrow">
+                MON COMPTE
+            </div>
+
+            <h1>
+                Commande #{{ order.id }}
+            </h1>
+
+            <p class="date">
+                Passée le {{ order.created_at|date:"d/m/Y à H:i" }}
+            </p>
+
+        </div>
+
+
+        <div class="status-badge">
+            {{ order.get_status_display }}
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SUIVI
+    ========================== -->
+
+    <div class="card">
+
+        <h2>
+            📦 Suivi de votre commande
+        </h2>
+
+
+        {% with status=order.status %}
+
+        <div class="order-tracking">
+
+
+            <!-- COMMANDE REÇUE -->
+
+            <div class="tracking-step active">
+
+                <div class="tracking-icon">
+                    ✓
+                </div>
+
+                <div class="tracking-content">
+
+                    <strong>
+                        Commande reçue
+                    </strong>
+
+                    <span>
+                        Votre commande a été enregistrée.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- COMMANDE CONFIRMÉE -->
+
+            <div class="tracking-step
+                {% if status == 'confirmed' or status == 'processing' or status == 'shipped' or status == 'delivered' %}
+                    active
+                {% endif %}
+            ">
+
+                <div class="tracking-icon">
+                    ✓
+                </div>
+
+                <div class="tracking-content">
+
+                    <strong>
+                        Commande confirmée
+                    </strong>
+
+                    <span>
+
+                        {% if status == 'pending' %}
+                            En attente de confirmation.
+                        {% else %}
+                            Votre commande est confirmée.
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRÉPARATION -->
+
+            <div class="tracking-step
+                {% if status == 'processing' or status == 'shipped' or status == 'delivered' %}
+                    active
+                {% endif %}
+            ">
+
+                <div class="tracking-icon">
+                    📦
+                </div>
+
+                <div class="tracking-content">
+
+                    <strong>
+                        Préparation
+                    </strong>
+
+                    <span>
+
+                        {% if status == 'processing' %}
+                            Votre commande est en préparation.
+                        {% elif status == 'shipped' or status == 'delivered' %}
+                            Commande préparée.
+                        {% else %}
+                            En attente.
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- EXPÉDIÉE -->
+
+            <div class="tracking-step
+                {% if status == 'shipped' or status == 'delivered' %}
+                    active
+                {% endif %}
+            ">
+
+                <div class="tracking-icon">
+                    🚚
+                </div>
+
+                <div class="tracking-content">
+
+                    <strong>
+                        Expédiée
+                    </strong>
+
+                    <span>
+
+                        {% if status == 'shipped' %}
+                            Votre commande est en livraison.
+                        {% elif status == 'delivered' %}
+                            Commande livrée.
+                        {% else %}
+                            En attente d'expédition.
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- LIVRÉE -->
+
+            <div class="tracking-step
+                {% if status == 'delivered' %}
+                    active
+                {% endif %}
+            ">
+
+                <div class="tracking-icon">
+                    🎉
+                </div>
+
+                <div class="tracking-content">
+
+                    <strong>
+                        Livrée
+                    </strong>
+
+                    <span>
+
+                        {% if status == 'delivered' %}
+                            Commande livrée avec succès.
+                        {% else %}
+                            En attente de livraison.
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        {% endwith %}
+
+    </div>
+
+
+    <!-- =========================
+         INFORMATIONS CLIENT
+    ========================== -->
+
+    <div class="info-grid">
+
+
+        <div class="card info-card">
+
+            <h2>
+                👤 Informations client
+            </h2>
+
+            <p>
+                <strong>Nom :</strong>
+                {{ order.customer_name }}
+            </p>
+
+            <p>
+                <strong>Téléphone :</strong>
+                {{ order.phone }}
+            </p>
+
+            {% if order.email %}
+
+            <p>
+                <strong>Email :</strong>
+                {{ order.email }}
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="card info-card">
+
+            <h2>
+                📍 Livraison
+            </h2>
+
+            <p>
+                <strong>Zone :</strong>
+                {{ order.city }}
+            </p>
+
+            <p>
+                <strong>Adresse :</strong>
+                {{ order.address }}
+            </p>
+
+            {% if order.delivery %}
+
+            <p>
+                <strong>Délai estimé :</strong>
+                {{ order.delivery.estimated_duration }}
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         PRODUITS
+    ========================== -->
+
+    <div class="card">
+
+        <h2>
+            🛍️ Produits commandés
+        </h2>
+
+
+        {% for item in order.items.all %}
+
+        <div class="product-row">
+
+            <div class="product-info">
+
+                <strong>
+                    {{ item.product_name }}
+                </strong>
+
+                {% if item.variant_description %}
+
+                <span>
+                    {{ item.variant_description }}
+                </span>
+
+                {% endif %}
+
+                <small>
+                    Quantité : {{ item.quantity }}
+                </small>
+
+            </div>
+
+
+            <div class="product-price">
+                {{ item.subtotal|floatformat:0 }} FCFA
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =========================
+         TOTAL
+    ========================== -->
+
+    <div class="card">
+
+        <div class="total-row">
+
+            <span>
+                Sous-total
+            </span>
+
+            <strong>
+                {{ order.subtotal|floatformat:0 }} FCFA
+            </strong>
+
+        </div>
+
+
+        <div class="total-row">
+
+            <span>
+                Livraison
+            </span>
+
+            <strong>
+                {{ order.delivery_fee|floatformat:0 }} FCFA
+            </strong>
+
+        </div>
+
+
+        <div class="total-row grand-total">
+
+            <span>
+                Total
+            </span>
+
+            <strong>
+                {{ order.total|floatformat:0 }} FCFA
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         PAIEMENT
+    ========================== -->
+
+    {% if order.payment %}
+
+    <div class="card payment-info">
+
+        <h2>
+            💳 Paiement
+        </h2>
+
+        <p>
+            <strong>Méthode :</strong>
+            {{ order.payment.get_method_display }}
+        </p>
+
+        <p>
+            <strong>Statut :</strong>
+            {{ order.payment.get_status_display }}
+        </p>
+
+        {% if order.payment.transaction_reference %}
+
+        <p>
+            <strong>Référence :</strong>
+            {{ order.payment.transaction_reference }}
+        </p>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         BOUTONS
+    ========================== -->
+
+    <div class="order-actions">
+
+        <a
+            href="{% url 'mon_compte' %}"
+            class="order-btn secondary"
+        >
+            ← Retour à mon compte
+        </a>
+
+        <a
+            href="{% url 'boutique' %}"
+            class="order-btn primary"
+        >
+            Continuer mes achats
+        </a>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+EOF

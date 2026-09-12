@@ -1,0 +1,698 @@
+{% extends "base.html" %}
+
+{% block title %}
+Finaliser ma commande — Baol Shop
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.checkout-page {
+    max-width: 1150px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.checkout-header {
+    margin-bottom: 35px;
+}
+
+.checkout-header h1 {
+    font-size: 40px;
+    margin: 0 0 8px;
+}
+
+.checkout-header p {
+    color: #666;
+    margin: 0;
+}
+
+.checkout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(320px, .8fr);
+    gap: 30px;
+    align-items: start;
+}
+
+.box {
+    background: white;
+    padding: 28px;
+    border-radius: 18px;
+    border: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.04);
+}
+
+.box h2 {
+    margin: 0 0 25px;
+    font-size: 21px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 15px;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #111;
+    box-shadow: 0 0 0 3px rgba(17,17,17,.08);
+}
+
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.required {
+    color: #c62828;
+}
+
+.delivery-info {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #f7f7f7;
+    border-radius: 8px;
+    color: #666;
+    font-size: 13px;
+    min-height: 18px;
+}
+
+.payment-option {
+    margin-bottom: 10px;
+}
+
+.payment-option label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    margin: 0;
+    transition: all .2s;
+}
+
+.payment-option label:hover {
+    border-color: #111;
+    background: #fafafa;
+}
+
+.payment-option input {
+    width: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.product-line {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.product-line:first-of-type {
+    padding-top: 0;
+}
+
+.product-line:last-of-type {
+    border-bottom: 0;
+}
+
+.product-name {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.product-variant {
+    color: #777;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.product-price {
+    color: #555;
+    font-size: 14px;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 16px 0;
+}
+
+.delivery-row {
+    color: #555;
+}
+
+.grand-total {
+    border-top: 2px solid #111;
+    padding-top: 20px;
+    margin-top: 22px;
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.total-value {
+    white-space: nowrap;
+}
+
+.submit {
+    width: 100%;
+    padding: 17px;
+    background: #111;
+    color: white;
+    border: 0;
+    border-radius: 11px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s, transform .2s;
+}
+
+.submit:hover {
+    opacity: .88;
+    transform: translateY(-1px);
+}
+
+.security-note {
+    margin-top: 14px;
+    text-align: center;
+    color: #777;
+    font-size: 12px;
+}
+
+@media (max-width: 800px) {
+
+    .checkout-page {
+        margin: 30px auto;
+    }
+
+    .checkout-header h1 {
+        font-size: 30px;
+    }
+
+    .checkout-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .box {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .checkout-page {
+        padding: 0 14px;
+    }
+
+    .checkout-header h1 {
+        font-size: 27px;
+    }
+
+    .box {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .grand-total {
+        font-size: 20px;
+    }
+}
+
+</style>
+
+
+<div class="checkout-page">
+
+    <div class="checkout-header">
+
+        <h1>
+            Finaliser ma commande 🛍️
+        </h1>
+
+        <p>
+            Vérifiez vos informations avant de confirmer votre commande.
+        </p>
+
+    </div>
+
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <div class="checkout-grid">
+
+
+            <!-- ========================= -->
+            <!-- INFORMATIONS CLIENT -->
+            <!-- ========================= -->
+
+            <div>
+
+                <div class="box">
+
+                    <h2>
+                        👤 Informations client
+                    </h2>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Nom complet
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="customer_name"
+                            value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}"
+                            placeholder="Votre nom complet"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"
+                            placeholder="exemple@email.com"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Téléphone
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="77 XXX XX XX"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Adresse précise
+                            <span class="required">*</span>
+                        </label>
+
+                        <textarea
+                            name="address"
+                            placeholder="Quartier, rue, numéro de maison, repère..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- LIVRAISON -->
+                <!-- ========================= -->
+
+                <div class="box">
+
+                    <h2>
+                        🚚 Livraison
+                    </h2>
+
+                    <div class="form-group">
+
+                        <label>
+                            Zone / Localité
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            name="zone"
+                            id="zone"
+                            required
+                        >
+
+                            <option value="">
+                                Choisir votre localité
+                            </option>
+
+                            {% for zone in zones %}
+
+                                <option
+                                    value="{{ zone.id }}"
+                                    data-fee="{{ zone.fee }}"
+                                    data-duration="{{ zone.estimated_duration }}"
+                                >
+                                    {{ zone.name }}
+                                    — {{ zone.fee|floatformat:0 }} FCFA
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <div
+                            id="delivery-duration"
+                            class="delivery-info"
+                        >
+                            Sélectionnez votre localité pour voir le délai estimé.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- PAIEMENT -->
+                <!-- ========================= -->
+
+                <div class="box">
+
+                    <h2>
+                        💳 Mode de paiement
+                    </h2>
+
+
+                    <div class="payment-option">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="cash"
+                                required
+                            >
+
+                            <span>
+                                💵 Paiement à la livraison
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="payment-option">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="wave"
+                            >
+
+                            <span>
+                                📱 Wave
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="payment-option">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="orange_money"
+                            >
+
+                            <span>
+                                🟠 Orange Money
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="payment-option">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="bank"
+                            >
+
+                            <span>
+                                🏦 Virement bancaire
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- RÉSUMÉ -->
+            <!-- ========================= -->
+
+            <div>
+
+                <div class="box">
+
+                    <h2>
+                        🛒 Résumé de la commande
+                    </h2>
+
+
+                    {% for item in items %}
+
+                        <div class="product-line">
+
+                            <div class="product-name">
+                                {{ item.product.name }}
+                            </div>
+
+
+                            {% if item.variant %}
+
+                                <div class="product-variant">
+                                    {{ item.variant }}
+                                </div>
+
+                            {% endif %}
+
+
+                            <div class="product-price">
+
+                                {{ item.quantity }}
+                                ×
+                                {{ item.price|floatformat:0 }} FCFA
+
+                                <strong>
+                                    —
+                                    {{ item.subtotal|floatformat:0 }} FCFA
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+
+                    <div class="summary-line">
+
+                        <span>
+                            Sous-total
+                        </span>
+
+                        <strong>
+                            <span id="subtotal">
+                                {{ subtotal|floatformat:0 }}
+                            </span>
+                            FCFA
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-line delivery-row">
+
+                        <span>
+                            Livraison
+                        </span>
+
+                        <strong class="total-value">
+                            <span id="delivery-fee">
+                                0
+                            </span>
+                            FCFA
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-line grand-total">
+
+                        <span>
+                            Total
+                        </span>
+
+                        <strong class="total-value">
+
+                            <span id="total">
+                                {{ subtotal|floatformat:0 }}
+                            </span>
+
+                            FCFA
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit"
+                >
+                    Confirmer ma commande
+                </button>
+
+
+                <div class="security-note">
+                    🔒 Vos informations sont utilisées uniquement pour traiter votre commande.
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+const zoneSelect = document.getElementById("zone");
+const deliveryFeeElement = document.getElementById("delivery-fee");
+const totalElement = document.getElementById("total");
+const durationElement = document.getElementById("delivery-duration");
+
+const subtotal = parseFloat(
+    document.getElementById("subtotal").textContent.replace(/\s/g, "")
+) || 0;
+
+
+function updateCheckout() {
+
+    const selectedOption =
+        zoneSelect.options[zoneSelect.selectedIndex];
+
+    if (!selectedOption || !selectedOption.value) {
+
+        deliveryFeeElement.textContent =
+            "0";
+
+        totalElement.textContent =
+            subtotal.toLocaleString("fr-FR");
+
+        durationElement.textContent =
+            "Sélectionnez votre localité pour voir le délai estimé.";
+
+        return;
+    }
+
+
+    const fee =
+        parseFloat(
+            selectedOption.dataset.fee
+        ) || 0;
+
+
+    const estimatedDuration =
+        selectedOption.dataset.duration || "";
+
+
+    deliveryFeeElement.textContent =
+        fee.toLocaleString("fr-FR");
+
+
+    totalElement.textContent =
+        (subtotal + fee).toLocaleString("fr-FR");
+
+
+    if (estimatedDuration) {
+
+        durationElement.textContent =
+            "⏱️ Délai estimé : " + estimatedDuration;
+
+    } else {
+
+        durationElement.textContent = "";
+
+    }
+
+}
+
+
+zoneSelect.addEventListener(
+    "change",
+    updateCheckout
+);
+
+</script>
+
+{% endblock %}

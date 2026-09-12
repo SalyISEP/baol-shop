@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ product.name }} — Baol Shop
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.product-detail {
+    max-width: 1150px;
+    margin: 55px auto;
+    padding: 0 20px;
+}
+
+.product-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+.product-detail-image {
+    height: 560px;
+    background: #f3f3f3;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.no-image {
+    color: #aaa;
+    font-size: 20px;
+}
+
+.category-label {
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.product-detail h1 {
+    font-size: 44px;
+    margin: 12px 0;
+}
+
+.description {
+    color: #666;
+    line-height: 1.8;
+    margin: 25px 0;
+}
+
+.price-box {
+    margin: 25px 0;
+}
+
+.old-price {
+    color: #999;
+    text-decoration: line-through;
+    margin-right: 12px;
+}
+
+.current-price {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.variant-title {
+    font-weight: bold;
+    margin: 20px 0 10px;
+}
+
+.variant-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.variant-option {
+    position: relative;
+}
+
+.variant-option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.variant-option label {
+    display: block;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    background: white;
+}
+
+.variant-option input:checked + label {
+    border-color: #111;
+    background: #111;
+    color: white;
+}
+
+.variant-option.disabled label {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.stock-info {
+    margin: 18px 0;
+    font-size: 14px;
+}
+
+.available {
+    color: #198754;
+    font-weight: bold;
+}
+
+.unavailable {
+    color: #c62828;
+    font-weight: bold;
+}
+
+.quantity-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.quantity-box input {
+    width: 90px;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.add-button {
+    width: 100%;
+    padding: 17px;
+    border: 0;
+    border-radius: 10px;
+    background: #111;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    opacity: .85;
+}
+
+.info-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f7f7f7;
+    border-radius: 12px;
+    line-height: 1.8;
+    color: #555;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 25px;
+    text-decoration: none;
+    color: #666;
+}
+
+@media (max-width: 800px) {
+
+    .product-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .product-detail-image {
+        height: 400px;
+    }
+
+    .product-detail h1 {
+        font-size: 34px;
+    }
+}
+
+</style>
+
+
+<div class="product-detail">
+
+    <a
+        href="{% url 'boutique' %}"
+        class="back-link"
+    >
+        ← Retour à la boutique
+    </a>
+
+
+    <div class="product-detail-grid">
+
+
+        <div class="product-detail-image">
+
+            {% if product.image %}
+
+                <img
+                    src="{{ product.image.url }}"
+                    alt="{{ product.name }}"
+                >
+
+            {% else %}
+
+                <div class="no-image">
+                    BAOL SHOP
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <div>
+
+            {% if product.category %}
+
+                <div class="category-label">
+                    {{ product.category.name }}
+                </div>
+
+            {% endif %}
+
+
+            <h1>
+                {{ product.name }}
+            </h1>
+
+
+            {% if product.description %}
+
+                <div class="description">
+                    {{ product.description }}
+                </div>
+
+            {% endif %}
+
+
+            <div class="price-box">
+
+                {% if product.promo_price %}
+
+                    <span class="old-price">
+                        {{ product.price|floatformat:0 }} FCFA
+                    </span>
+
+                    <span class="current-price">
+                        {{ product.promo_price|floatformat:0 }} FCFA
+                    </span>
+
+                {% else %}
+
+                    <span class="current-price">
+                        {{ product.price|floatformat:0 }} FCFA
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <form
+                method="post"
+                action="{% url 'ajouter_panier' product.id %}"
+            >
+
+                {% csrf_token %}
+
+
+                {% if variants %}
+
+                    <div class="variant-title">
+                        Choisissez votre variante
+                    </div>
+
+
+                    <div class="variant-grid">
+
+                        {% for variant in variants %}
+
+                            <div
+                                class="variant-option {% if variant.stock <= 0 %}disabled{% endif %}"
+                            >
+
+                                <input
+                                    type="radio"
+                                    name="variant_id"
+                                    id="variant-{{ variant.id }}"
+                                    value="{{ variant.id }}"
+                                    {% if variant.stock <= 0 %}disabled{% endif %}
+                                    {% if forloop.first and variant.stock > 0 %}checked{% endif %}
+                                    required
+                                >
+
+                                <label for="variant-{{ variant.id }}">
+
+                                    {% if variant.color %}
+                                        <strong>
+                                            {{ variant.color }}
+                                        </strong>
+                                    {% endif %}
+
+                                    {% if variant.size %}
+                                        · Taille {{ variant.size }}
+                                    {% endif %}
+
+                                    {% if variant.pointure %}
+                                        · Pointure {{ variant.pointure }}
+                                    {% endif %}
+
+                                    <br>
+
+                                    {% if variant.stock > 0 %}
+                                        <small>
+                                            {{ variant.stock }} disponible(s)
+                                        </small>
+                                    {% else %}
+                                        <small>
+                                            Épuisé
+                                        </small>
+                                    {% endif %}
+
+                                </label>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="stock-info">
+
+                    {% if product.is_available %}
+
+                        <span class="available">
+                            ✓ Produit disponible
+                        </span>
+
+                    {% else %}
+
+                        <span class="unavailable">
+                            ✕ Produit épuisé
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if product.is_available %}
+
+                    <div class="quantity-box">
+
+                        <strong>
+                            Quantité :
+                        </strong>
+
+                        <input
+                            type="number"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            max="{{ product.total_stock }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="add-button"
+                    >
+                        Ajouter au panier
+                    </button>
+
+                {% else %}
+
+                    <button
+                        type="button"
+                        class="add-button"
+                        disabled
+                        style="background:#ccc; cursor:not-allowed;"
+                    >
+                        Produit épuisé
+                    </button>
+
+                {% endif %}
+
+            </form>
+
+
+            <div class="info-box">
+
+                🚚 <strong>Livraison :</strong>
+                disponible selon votre zone.
+
+                <br>
+
+                💳 <strong>Paiement :</strong>
+                à la livraison, Wave, Orange Money ou virement.
+
+                <br>
+
+                🔒 <strong>Commande sécurisée :</strong>
+                vos informations sont traitées avec soin.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

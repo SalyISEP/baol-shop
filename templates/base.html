@@ -1,0 +1,115 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}Baol Shop{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <div class="header-inner">
+
+        <a
+            href="{% url 'home' %}"
+            class="logo"
+        >
+            BAOL SHOP
+        </a>
+
+        <nav class="nav">
+
+            <a href="{% url 'home' %}">
+                Accueil
+            </a>
+
+            <a href="{% url 'boutique' %}">
+                Boutique
+            </a>
+
+            {% if user.is_authenticated %}
+
+                <a href="{% url 'mon_compte' %}">
+                    Mon compte
+                </a>
+
+                <a href="{% url 'deconnexion' %}">
+                    Déconnexion
+                </a>
+
+            {% else %}
+
+                <a href="{% url 'connexion' %}">
+                    Connexion
+                </a>
+
+            {% endif %}
+
+            <a href="{% url 'panier' %}">
+                🛒 Panier
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+{% if messages %}
+
+    <div class="messages">
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+<main>
+
+    {% block content %}
+    {% endblock %}
+
+</main>
+
+
+<footer class="site-footer">
+
+    <p>
+        © {% now "Y" %} Baol Shop — Tous droits réservés.
+    </p>
+
+</footer>
+
+</body>
+
+</html>

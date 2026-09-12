@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}
+Connexion — Baol Shop
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.auth-page {
+    max-width: 450px;
+    margin: 70px auto;
+    padding: 20px;
+}
+
+.auth-card {
+    background: white;
+    padding: 35px;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+}
+
+.auth-card h1 {
+    margin-top: 0;
+}
+
+.auth-card p {
+    color: #777;
+}
+
+.auth-card label {
+    display: block;
+    margin: 18px 0 7px;
+    font-weight: bold;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.auth-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    border: 0;
+    border-radius: 8px;
+    background: #111;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-link a {
+    font-weight: bold;
+}
+
+</style>
+
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <p class="small-title">
+            BAOL SHOP
+        </p>
+
+        <h1>
+            Bon retour 👋
+        </h1>
+
+        <p>
+            Connectez-vous à votre compte.
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <label for="username">
+                Nom d'utilisateur
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Votre nom d'utilisateur"
+                required
+            >
+
+
+            <label for="password">
+                Mot de passe
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Votre mot de passe"
+                required
+            >
+
+
+            <button
+                type="submit"
+                class="auth-button"
+            >
+                Se connecter
+            </button>
+
+        </form>
+
+
+        <div class="auth-link">
+
+            Vous n'avez pas encore de compte ?
+
+            <a href="{% url 'inscription' %}">
+                Créer un compte
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
